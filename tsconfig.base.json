@@ -13,8 +13,24 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "strictPropertyInitialization": false,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@ecommerce-monorepo/notifications-management": [
+        "libs/contexts/notifications-management/src/index.ts"
+      ],
+      "@ecommerce-monorepo/orders-management": [
+        "libs/contexts/orders-management/src/index.ts"
+      ],
+      "@ecommerce-monorepo/products-management": [
+        "libs/contexts/products-management/src/index.ts"
+      ],
+      "@ecommerce-monorepo/saga": ["libs/saga/src/index.ts"],
+      "@ecommerce-monorepo/shared": ["libs/shared/src/index.ts"],
+      "@ecommerce-monorepo/shared-kernel": [
+        "libs/contexts/shared-kernel/src/index.ts"
+      ]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
