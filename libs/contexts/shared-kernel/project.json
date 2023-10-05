@@ -1,0 +1,43 @@
+{
+  "name": "shared-kernel",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/contexts/shared-kernel/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/contexts/shared-kernel",
+        "main": "libs/contexts/shared-kernel/src/index.ts",
+        "tsConfig": "libs/contexts/shared-kernel/tsconfig.lib.json",
+        "assets": ["libs/contexts/shared-kernel/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/contexts/shared-kernel/**/*.ts",
+          "libs/contexts/shared-kernel/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/contexts/shared-kernel/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}
