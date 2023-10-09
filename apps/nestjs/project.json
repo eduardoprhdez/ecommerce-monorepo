@@ -55,6 +55,29 @@
           "codeCoverage": true
         }
       }
+    },
+    "docker:up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "chmod +x ./apps/nestjs/debezium-connectors/launch-connectors.sh",
+          "docker compose -f ./apps/nestjs/docker-compose.yml -v up -d",
+          "sleep 20",
+          "./apps/nestjs/debezium-connectors/launch-connectors.sh"
+        ],
+        "parallel": false
+      }
+    },
+    "docker:down": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "chmod +x ./apps/nestjs/debezium-connectors/stop-connectors.sh",
+          "./apps/nestjs/debezium-connectors/stop-connectors.sh",
+          "docker compose -f ./apps/nestjs/docker-compose.yml down"
+        ],
+        "parallel": false
+      }
     }
   },
   "tags": []
