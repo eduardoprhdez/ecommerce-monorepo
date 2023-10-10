@@ -15,6 +15,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.httpCode
         : HttpStatusCode.INTERNAL_SERVER_ERROR;
 
+    if (!(exception instanceof BaseError)) console.log(exception);
+
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
