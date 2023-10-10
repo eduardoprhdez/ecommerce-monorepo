@@ -60,13 +60,19 @@ Along with that, the `OrderPlaced` event is sent when the order is placed, and `
 
 Finally the notification contexts in listening for the events and creating notifications whenever any of them is received. The notifications can be read in real-time through web sockets (graphql subscriptions)
 
-### How to use the project
+### How to run the project
 
-First download the docker images for the third-party infrastructure app and deploy the Debezium connectors to listen to the database changes:
+You need a tool like Docker Desktop, or to have Docker in your machine to be able to execute the project
+
+1. Clone the repository
+
+2. Install the dependencies executing `npm i`
+
+3. Download the docker images for the third-party infrastructure app and deploy the Debezium connectors to listen to the database changes:
 
 `npx nx run nestjs:docker:up`
 
-Launch the nestjs application:
+4. Launch the nestjs application:
 
 `npx nx run nestjs:serve`
 
@@ -88,10 +94,10 @@ To watch in real time the notifications through graphql subscriptions:
 
 - Click the play button
 
-To execute the e2e tests:
-
-`npx nx run nestjs:test`
-
-To put down the docker container:
+5.To put down the docker container:
 
 `npx nx run nestjs:docker:down`
+
+6.To execute the e2e tests:
+
+`npx nx run nestjs:test`
