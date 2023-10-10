@@ -2,9 +2,14 @@ export * from './commands/create-product.command';
 export * from './commands/delete-product.command';
 export * from './commands/update-product.command';
 
+export * from './queries/get-product.query';
+
 export * from './handlers/create-product.handler';
 export * from './handlers/delete-product.handler';
 export * from './handlers/update-product.handler';
+export * from './handlers/get-product.handler';
+export * from './handlers/get-products.handler';
+
 export * from './sagas/handlers/reduce-products-stock.handler';
 
 export * from './sagas/commands/reduce-products-stock.command';

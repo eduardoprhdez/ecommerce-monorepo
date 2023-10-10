@@ -45,4 +45,15 @@ export class ProductTypeormRepository
       throw new DatabaseError(this.constructor.name, 'getProduct', productId);
     }
   }
+
+  async getProducts(): Promise<ProductPrimitive[]> {
+    try {
+      const products = await this.find();
+
+      return products;
+    } catch (error) {
+      console.log(error);
+      throw new DatabaseError(this.constructor.name, 'getProducts', '');
+    }
+  }
 }

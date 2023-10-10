@@ -7,4 +7,5 @@ export interface ProductRepository {
   getProduct(
     productId: ProductPrimitive['id'],
   ): Promise<ProductPrimitive | undefined>;
+  getProducts(): Promise<ProductPrimitive[]>;
 }
