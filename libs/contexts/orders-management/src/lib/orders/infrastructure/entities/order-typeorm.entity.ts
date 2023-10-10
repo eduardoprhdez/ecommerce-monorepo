@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { OrderItemTypeormEntity } from './order-item-typeorm.entity';
 import { OrderPrimitive, OrderItemPrimitive } from '../../domain';
 import { OrderStatePrimitive } from '../../domain/primitives/order-state.primitive';
@@ -18,4 +24,7 @@ export class OrderTypeormEntity implements OrderPrimitive {
     cascade: true,
   })
   items: OrderItemPrimitive[];
+
+  @CreateDateColumn()
+  creationDate: string;
 }

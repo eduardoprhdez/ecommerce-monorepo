@@ -48,6 +48,9 @@ export class OrderTypeormRepository
         relations: {
           items: true,
         },
+        order: {
+          creationDate: 'DESC',
+        },
       });
 
       return orders;

@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('OrderEventTypeormEntity')
 export class OrderEventTypeormEntity {
@@ -13,4 +18,7 @@ export class OrderEventTypeormEntity {
 
   @Column({ type: 'json' })
   eventData: Record<string, unknown>;
+
+  @CreateDateColumn()
+  creationDate: string;
 }

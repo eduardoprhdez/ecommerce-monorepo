@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { OrderItemPrimitive } from '../../domain';
 import { OrderTypeormEntity } from './order-typeorm.entity';
 
@@ -22,4 +29,7 @@ export class OrderItemTypeormEntity implements OrderItemPrimitive {
   })
   @JoinColumn()
   order?: OrderTypeormEntity;
+
+  @CreateDateColumn()
+  creationDate: string;
 }

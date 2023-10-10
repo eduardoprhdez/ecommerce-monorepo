@@ -21,7 +21,6 @@ export class PlaceOrderCommandHandler {
 
   async execute(placeOrderCommand: PlaceOrderCommand): Promise<void> {
     try {
-      console.log('-------------------------------------');
       const order = OrderAggregate.fromPrimitives({
         ...placeOrderCommand,
         state: OrderStatePrimitive.PENDING,

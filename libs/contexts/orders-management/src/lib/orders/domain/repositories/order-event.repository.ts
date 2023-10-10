@@ -8,4 +8,7 @@ export interface OrderEventRepository {
     orderEvent: OrderApprovedEvent | OrderCancelledEvent | OrderPlacedEvent,
     transaction?: Transaction,
   ): Promise<void>;
+  getOrderEvents(): Promise<
+    (OrderApprovedEvent | OrderCancelledEvent | OrderPlacedEvent)[]
+  >;
 }

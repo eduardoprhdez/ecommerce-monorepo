@@ -30,4 +30,19 @@ export class OrderEventTypeormRepository
       );
     }
   }
+
+  async getOrderEvents(): Promise<
+    (OrderApprovedEvent | OrderCancelledEvent | OrderPlacedEvent)[]
+  > {
+    try {
+      return this.find({
+        order: {
+          creationDate: 'DESC',
+        },
+      }) as any;
+    } catch (error) {
+      console.log(error);
+      throw new DatabaseError(this.constructor.name, 'getOrderEvents', '');
+    }
+  }
 }

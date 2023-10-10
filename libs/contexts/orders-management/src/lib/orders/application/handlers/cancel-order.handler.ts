@@ -17,7 +17,6 @@ export class CancelOrderCommandHandler {
   ) {}
 
   async execute(cancelOrderCommand: CancelOrderCommand): Promise<void> {
-    console.log('COMANDO', cancelOrderCommand);
     try {
       const orderPrimitive = await this.orderRepository.getOrder(
         cancelOrderCommand.id,
