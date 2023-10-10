@@ -114,6 +114,8 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
   }
 
   async handleReply(message: Message) {
+    this.logger.log(`Reply arrived: ${JSON.stringify(message)}`);
+
     if (!this.isReplyForThisSagaType(message)) return;
 
     const sagaId = message.getRequiredHeader(SagaReplyHeaders.REPLY_SAGA_ID);
@@ -143,7 +145,7 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
       message,
     );
 
-    this.logger.log(`Handled reply. Sending commands ${actions.getCommand()}`);
+    this.logger.log(`Actions to process: ${JSON.stringify(actions)}`);
 
     await this.processActions(
       sagaType,
@@ -198,6 +200,7 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
 
         try {
           if (command) {
+            this.logger.log(`Sending command: ${JSON.stringify(command)}`);
             sagaId && (headers[SagaCommandMessageHeaders.SAGA_ID] = sagaId);
             sagaType &&
               (headers[SagaCommandMessageHeaders.SAGA_TYPE] = sagaType);
