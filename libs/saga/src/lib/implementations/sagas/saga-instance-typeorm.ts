@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 import { SagaInstanceType } from '../../definitions/sagas/saga-instance-type';
 import { SerializedSagaDataType } from '../../definitions/sagas/serialized-saga-data';
 
@@ -27,4 +27,7 @@ export class SagaInstanceTypeorm implements SagaInstanceType {
 
   @Column({ type: 'boolean' })
   failed: boolean;
+
+  @CreateDateColumn()
+  creationDate: string;
 }

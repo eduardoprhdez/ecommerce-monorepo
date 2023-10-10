@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 import { MessageEntity } from '../../definitions/messages/message-entity';
 import { SagaCommand } from '../../definitions/commands/command';
 
@@ -15,4 +15,7 @@ export class MessageTypeormEntity implements MessageEntity {
 
   @Column({ type: 'json' })
   headers: Record<string, string>;
+
+  @CreateDateColumn()
+  creationDate: string;
 }
