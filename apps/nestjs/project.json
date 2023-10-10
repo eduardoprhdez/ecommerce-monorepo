@@ -62,7 +62,8 @@
         "commands": [
           "chmod +x ./apps/nestjs/debezium-connectors/launch-connectors.sh",
           "docker compose -f ./apps/nestjs/docker-compose.yml -v up -d",
-          "sleep 20",
+          "echo 'Waiting 15 seconds before starting the debezium connectors...'",
+          "sleep 15",
           "./apps/nestjs/debezium-connectors/launch-connectors.sh"
         ],
         "parallel": false
