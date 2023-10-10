@@ -7,6 +7,7 @@ import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
 import { ProductTypeormEntity } from '@ecommerce-monorepo/products-management';
 import {
+  OrderEventTypeormEntity,
   OrderItemTypeormEntity,
   OrderTypeormEntity,
 } from '@ecommerce-monorepo/orders-management';
@@ -17,7 +18,10 @@ import {
 import { NotificationsModule } from './notifications/notifications.module';
 import { GraphqlModule } from './graphql/graphql.module';
 import { AppResolver } from './app.resolver';
-import { NotificationTypeormEntity } from '@ecommerce-monorepo/notifications-management';
+import {
+  NotificationEventTypeormEntity,
+  NotificationTypeormEntity,
+} from '@ecommerce-monorepo/notifications-management';
 
 @Module({
   imports: [
@@ -31,10 +35,12 @@ import { NotificationTypeormEntity } from '@ecommerce-monorepo/notifications-man
       entities: [
         ProductTypeormEntity,
         OrderTypeormEntity,
+        OrderEventTypeormEntity,
         OrderItemTypeormEntity,
         SagaInstanceTypeorm,
         MessageTypeormEntity,
         NotificationTypeormEntity,
+        NotificationEventTypeormEntity,
       ],
       synchronize: true,
       // logging: true,

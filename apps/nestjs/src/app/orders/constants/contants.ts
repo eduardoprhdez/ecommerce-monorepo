@@ -1,4 +1,5 @@
 export const ORDER_REPOSITORY = 'order-repository';
+export const ORDER_EVENT_REPOSITORY = 'order-event-repository';
 export const MESSAGE_REPOSITORY = 'message-repository';
 export const SAGA_REPOSITORY = 'saga-repository';
 export const PLACE_ORDER_SAGA_MANAGER = 'place-order-saga-manager';

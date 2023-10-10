@@ -8,6 +8,8 @@ import {
   UpdateProductCommandHandler,
   DeleteProductCommandHandler,
   ReduceProductsStockCommandHandler,
+  GetProductQueryHandler,
+  GetManyProductsQueryHandler,
 } from '@ecommerce-monorepo/products-management';
 import { EntityManager } from 'typeorm';
 import { PRODUCT_REPOSITORY } from './constants/products.constants';
@@ -45,6 +47,22 @@ import { PRODUCT_EVENT_EMITTER } from '../orders/constants/contants';
         );
       },
       inject: [EntityManager],
+    },
+    {
+      provide: GetProductQueryHandler,
+      useFactory(productRepository: ProductRepository): GetProductQueryHandler {
+        return new GetProductQueryHandler(productRepository);
+      },
+      inject: [PRODUCT_REPOSITORY],
+    },
+    {
+      provide: GetManyProductsQueryHandler,
+      useFactory(
+        productRepository: ProductRepository,
+      ): GetManyProductsQueryHandler {
+        return new GetManyProductsQueryHandler(productRepository);
+      },
+      inject: [PRODUCT_REPOSITORY],
     },
     {
       provide: CreateProductCommandHandler,

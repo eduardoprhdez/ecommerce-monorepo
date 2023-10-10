@@ -13,10 +13,14 @@ import {
   PlaceOrderSagaData,
   ApproveOrderCommandHandler,
   GetManyOrdersQueryHandler,
+  OrderEventTypeormRepository,
+  OrderEventTypeormEntity,
+  OrderEventRepository,
 } from '@ecommerce-monorepo/orders-management';
 import { EntityManager } from 'typeorm';
 import {
   MESSAGE_REPOSITORY,
+  ORDER_EVENT_REPOSITORY,
   ORDER_REPOSITORY,
   PLACE_ORDER_SAGA_MANAGER,
   SAGA_KAFKA_CONSUMER,
@@ -47,6 +51,7 @@ import {
       OrderTypeormEntity,
       SagaInstanceTypeorm,
       MessageTypeormEntity,
+      OrderEventTypeormEntity,
     ]),
   ],
   controllers: [OrdersController],
@@ -60,25 +65,71 @@ import {
       inject: [EntityManager],
     },
     {
-      provide: PlaceOrderCommandHandler,
-      useFactory(orderRepository: OrderRepository): PlaceOrderCommandHandler {
-        return new PlaceOrderCommandHandler(orderRepository);
+      provide: ORDER_EVENT_REPOSITORY,
+      useFactory(entityManager: EntityManager): OrderEventRepository {
+        return new OrderEventTypeormRepository(
+          OrderEventTypeormEntity,
+          entityManager,
+        );
       },
-      inject: [ORDER_REPOSITORY],
+      inject: [EntityManager],
+    },
+    {
+      provide: PlaceOrderCommandHandler,
+      useFactory(
+        orderRepository: OrderRepository,
+        orderEventRepository: OrderEventRepository,
+        transactionManager: TransactionManagerTypeorm,
+      ): PlaceOrderCommandHandler {
+        return new PlaceOrderCommandHandler(
+          orderRepository,
+          orderEventRepository,
+          transactionManager,
+        );
+      },
+      inject: [
+        ORDER_REPOSITORY,
+        ORDER_EVENT_REPOSITORY,
+        TransactionManagerTypeorm,
+      ],
     },
     {
       provide: CancelOrderCommandHandler,
-      useFactory(orderRepository: OrderRepository): CancelOrderCommandHandler {
-        return new CancelOrderCommandHandler(orderRepository);
+      useFactory(
+        orderRepository: OrderRepository,
+        orderEventRepository: OrderEventRepository,
+        transactionManager: TransactionManagerTypeorm,
+      ): CancelOrderCommandHandler {
+        return new CancelOrderCommandHandler(
+          orderRepository,
+          orderEventRepository,
+          transactionManager,
+        );
       },
-      inject: [ORDER_REPOSITORY],
+      inject: [
+        ORDER_REPOSITORY,
+        ORDER_EVENT_REPOSITORY,
+        TransactionManagerTypeorm,
+      ],
     },
     {
       provide: ApproveOrderCommandHandler,
-      useFactory(orderRepository: OrderRepository): ApproveOrderCommandHandler {
-        return new ApproveOrderCommandHandler(orderRepository);
+      useFactory(
+        orderRepository: OrderRepository,
+        orderEventRepository: OrderEventRepository,
+        transactionManager: TransactionManagerTypeorm,
+      ): ApproveOrderCommandHandler {
+        return new ApproveOrderCommandHandler(
+          orderRepository,
+          orderEventRepository,
+          transactionManager,
+        );
       },
-      inject: [ORDER_REPOSITORY],
+      inject: [
+        ORDER_REPOSITORY,
+        ORDER_EVENT_REPOSITORY,
+        TransactionManagerTypeorm,
+      ],
     },
     {
       provide: GetOrderQueryHandler,

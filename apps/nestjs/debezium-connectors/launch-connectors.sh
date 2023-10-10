@@ -1,8 +1,9 @@
 #!/bin/bash
 
-NOTIFICATIONS='
+
+ECOMMERCE_EVENTS='
 {
-  "name": "ecommerce-notifications",
+  "name": "ecommerce-events",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "postgres",
@@ -18,7 +19,7 @@ NOTIFICATIONS='
     "plugin.name": "pgoutput",
     "time.precision.mode": "connect",
     "schema.include.list": "public",
-    "table.include.list": "public.OrderTypeormEntity, public.NotificationTypeormEntity",
+    "table.include.list": "public.OrderEventTypeormEntity, public.NotificationEventTypeormEntity",
     "transforms": "RenameField, ContentBasedRouting",
     "transforms.RenameField.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
     "transforms.RenameField.blacklist": "before",
@@ -26,17 +27,17 @@ NOTIFICATIONS='
     "transforms.RenameField.renames": "after:data,source:metadata",
     "transforms.ContentBasedRouting.type": "io.debezium.transforms.ContentBasedRouter",
     "transforms.ContentBasedRouting.language": "jsr223.groovy",
-    "transforms.ContentBasedRouting.topic.expression": "value.metadata.table",
+    "transforms.ContentBasedRouting.topic.expression": "value.data.eventType",
     "skipped.operations": "t",
     "connector.client.config.override.policy": "All",
-    "slot.name": "ecommercenotificationslot"
+    "slot.name": "ecommerceeventslot"
   }
 }
 '
 
-ORDER_PLACING='
+SAGA_MESSAGES='
 {
-  "name": "ecommerce-order-placing",
+  "name": "ecommerce-saga-messages",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "postgres",
@@ -63,7 +64,7 @@ ORDER_PLACING='
     "transforms.ContentBasedRouting.topic.expression": "value.data.channel",
     "skipped.operations": "u,d,t",
     "connector.client.config.override.policy": "All",
-    "slot.name": "ecommerceslot"
+    "slot.name": "ecommercesagamessagesslot"
   }
 }
 '
@@ -71,5 +72,5 @@ ORDER_PLACING='
 
 
 # Utiliza curl para crear el conector Debezium
-curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d "$NOTIFICATIONS" http://localhost:8083/connectors
-curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d "$ORDER_PLACING" http://localhost:8083/connectors
+curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d "$SAGA_MESSAGES" http://localhost:8083/connectors
+curl -i -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d "$ECOMMERCE_EVENTS" http://localhost:8083/connectors

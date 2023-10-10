@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseFilters,
+  Get,
 } from '@nestjs/common';
 import { ClientKafka, EventPattern, Payload } from '@nestjs/microservices';
 import {
@@ -17,6 +18,9 @@ import {
   UpdateProductCommand,
   ReduceProductsStockCommandHandler,
   ReduceProductsStockCommand,
+  GetProductQueryHandler,
+  ProductPrimitive,
+  GetManyProductsQueryHandler,
 } from '@ecommerce-monorepo/products-management';
 import {
   CommandMessageHeaders,
@@ -32,6 +36,10 @@ import { HttpExceptionFilter } from '../errors/http-exception-filter';
 @UseFilters(new HttpExceptionFilter())
 export class ProductController {
   constructor(
+    @Inject(GetProductQueryHandler)
+    private readonly getProductQueryHandler: GetProductQueryHandler,
+    @Inject(GetManyProductsQueryHandler)
+    private readonly getManyProductsQueryHandler: GetManyProductsQueryHandler,
     @Inject(CreateProductCommandHandler)
     private readonly createProductCommandHandler: CreateProductCommandHandler,
     @Inject(UpdateProductCommandHandler)
@@ -43,6 +51,16 @@ export class ProductController {
     @Inject(PRODUCT_EVENT_EMITTER)
     private readonly productEventEmitter: ClientKafka,
   ) {}
+
+  @Get('id')
+  getProduct(@Param('id') productId: string): Promise<ProductPrimitive> {
+    return this.getProductQueryHandler.execute({ id: productId });
+  }
+
+  @Get()
+  getProducts(): Promise<ProductPrimitive[]> {
+    return this.getManyProductsQueryHandler.execute();
+  }
 
   @Post()
   createProduct(
