@@ -6,5 +6,6 @@ export * from './transactions/transaction-typeorm';
 export * from './errors/base.error';
 export * from './errors/database.error';
 export * from './errors/database-record-not-found.error';
+export * from './errors/unexpected.error';
 
 export * from './class';
