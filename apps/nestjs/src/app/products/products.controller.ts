@@ -52,7 +52,7 @@ export class ProductController {
     private readonly productEventEmitter: ClientKafka,
   ) {}
 
-  @Get('id')
+  @Get(':id')
   getProduct(@Param('id') productId: string): Promise<ProductPrimitive> {
     return this.getProductQueryHandler.execute({ id: productId });
   }
