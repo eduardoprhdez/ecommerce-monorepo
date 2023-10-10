@@ -1,4 +1,10 @@
-import { Check, Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Check,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+} from 'typeorm';
 import { ProductPrimitive } from '../../domain';
 
 @Entity('ProductTypeormEntity')
@@ -15,4 +21,7 @@ export class ProductTypeormEntity implements ProductPrimitive {
 
   @Column({ type: 'float' })
   price: number;
+
+  @CreateDateColumn()
+  creationDate: string;
 }

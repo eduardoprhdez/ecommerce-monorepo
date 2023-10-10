@@ -48,7 +48,11 @@ export class ProductTypeormRepository
 
   async getProducts(): Promise<ProductPrimitive[]> {
     try {
-      const products = await this.find();
+      const products = await this.find({
+        order: {
+          creationDate: 'DESC',
+        },
+      });
 
       return products;
     } catch (error) {
