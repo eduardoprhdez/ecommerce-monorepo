@@ -106,7 +106,6 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
   }
 
   handleMessage(message: Message) {
-    this.logger.debug(`handle message invoked ${message}`);
     if (message.hasHeader(SagaReplyHeaders.REPLY_SAGA_ID)) {
       this.handleReply(message);
     } else {
@@ -116,8 +115,6 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
 
   async handleReply(message: Message) {
     if (!this.isReplyForThisSagaType(message)) return;
-
-    this.logger.debug('Handle reply: {}', message);
 
     const sagaId = message.getRequiredHeader(SagaReplyHeaders.REPLY_SAGA_ID);
     const sagaType = message.getRequiredHeader(
@@ -137,8 +134,6 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
     );
 
     const currentState = sagaInstance.getStateName();
-
-    this.logger.log(`Current state=${currentState}`);
 
     const actions = await this.getStateDefinition().handleReply(
       sagaType,
@@ -229,7 +224,6 @@ export class SagaManagerImpl<Data> implements SagaManager<Data> {
         }
 
         if (actions.isReplyExpected()) {
-          this.logger.log('Breask look');
           break;
         } else {
           actions = await this.simulateSuccessfulReplyToLocalAction(

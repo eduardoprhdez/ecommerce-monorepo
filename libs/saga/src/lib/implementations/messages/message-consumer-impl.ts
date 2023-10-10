@@ -24,13 +24,6 @@ export class MessageConsumerImpl implements MessageConsumer {
 
     await this.kafkaConsumer.run({
       eachMessage: async ({ topic, message }) => {
-        this.logger.log(`Message recieved in topic <${topic}> : `, {
-          key: message.key?.toString(),
-          value: message.value?.toString(),
-          headers: message.headers,
-        });
-
-        // TODO: MEANINGFUL ERROR
         if (!message.value) throw new Error();
 
         const parsedMessage = JSON.parse(message.value.toString());
@@ -38,8 +31,6 @@ export class MessageConsumerImpl implements MessageConsumer {
         const headers = parsedMessage.headers;
 
         const messageInstance = new MessageImpl(topic, payload, headers);
-
-        this.logger.log(parsedMessage, payload, headers, messageInstance);
 
         handler(messageInstance);
       },
