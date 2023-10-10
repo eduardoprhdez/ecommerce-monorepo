@@ -22,6 +22,7 @@ import {
   NotificationEventTypeormEntity,
   NotificationTypeormEntity,
 } from '@ecommerce-monorepo/notifications-management';
+import { EventsController } from './events/events.controller';
 
 @Module({
   imports: [
@@ -50,7 +51,7 @@ import {
     OrdersModule,
     NotificationsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, EventsController],
   providers: [AppService, AppResolver],
 })
 export class AppModule {

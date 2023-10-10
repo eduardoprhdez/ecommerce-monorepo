@@ -223,6 +223,7 @@ import {
       ],
     },
   ],
+  exports: [ORDER_EVENT_REPOSITORY],
 })
 export class OrdersModule {
   constructor() {

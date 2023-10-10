@@ -84,5 +84,6 @@ import { TransactionManagerTypeorm } from '@ecommerce-monorepo/shared';
       inject: [NOTIFICATION_REPOSITORY],
     },
   ],
+  exports: [NOTIFICATION_EVENT_REPOSITORY],
 })
 export class NotificationsModule {}
