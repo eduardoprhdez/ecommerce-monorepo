@@ -1,4 +1,8 @@
-import { DatabaseRecordNotFoundError } from '@ecommerce-monorepo/shared';
+import {
+  BaseError,
+  DatabaseRecordNotFoundError,
+  UnexpectedError,
+} from '@ecommerce-monorepo/shared';
 import {
   NotificationAggregate,
   NotificationPrimitive,
@@ -12,20 +16,29 @@ export class GetNotificationQueryHandler {
   async execute(
     getNotificationQuery: GetNotificationQuery,
   ): Promise<NotificationPrimitive> {
-    const notificationPrimitives =
-      await this.notificationRepository.getNotification(
-        getNotificationQuery.id,
-      );
+    try {
+      const notificationPrimitives =
+        await this.notificationRepository.getNotification(
+          getNotificationQuery.id,
+        );
 
-    if (!notificationPrimitives)
-      throw new DatabaseRecordNotFoundError(
+      if (!notificationPrimitives)
+        throw new DatabaseRecordNotFoundError(
+          this.constructor.name,
+          getNotificationQuery.id,
+        );
+
+      const notification: NotificationAggregate =
+        NotificationAggregate.fromPrimitives(notificationPrimitives);
+
+      return notification.toPrimitives();
+    } catch (err) {
+      if (err instanceof BaseError) throw err;
+      throw new UnexpectedError(
         this.constructor.name,
-        getNotificationQuery.id,
+        'execute',
+        JSON.stringify(getNotificationQuery),
       );
-
-    const notification: NotificationAggregate =
-      NotificationAggregate.fromPrimitives(notificationPrimitives);
-
-    return notification.toPrimitives();
+    }
   }
 }

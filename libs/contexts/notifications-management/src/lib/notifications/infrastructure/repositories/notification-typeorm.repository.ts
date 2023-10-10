@@ -5,15 +5,23 @@ import {
   SaveNotificationDTO,
 } from '../../domain';
 import { NotificationTypeormEntity } from '../entities/notification-typeorm.entity';
-import { DatabaseError } from '@ecommerce-monorepo/shared';
+import { DatabaseError, TransactionTypeorm } from '@ecommerce-monorepo/shared';
 
 export class NotificationTypeormRepository
   extends Repository<NotificationTypeormEntity>
   implements NotificationRepository
 {
-  async saveNotification(notification: SaveNotificationDTO): Promise<void> {
+  async saveNotification(
+    notification: SaveNotificationDTO,
+    transaction: TransactionTypeorm,
+  ): Promise<void> {
     try {
-      await this.save(notification);
+      transaction
+        ? await transaction.queryRunner.manager.save(
+            NotificationTypeormEntity,
+            notification,
+          )
+        : await this.save(notification);
     } catch (error) {
       console.log(error);
       throw new DatabaseError(
@@ -40,6 +48,17 @@ export class NotificationTypeormRepository
         'getNotification',
         notificationId,
       );
+    }
+  }
+
+  async getNotifications(): Promise<NotificationPrimitive[]> {
+    try {
+      const notifications = await this.find();
+
+      return notifications;
+    } catch (error) {
+      console.log(error);
+      throw new DatabaseError(this.constructor.name, 'getNotifications', '');
     }
   }
 }
