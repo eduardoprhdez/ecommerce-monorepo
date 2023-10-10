@@ -53,7 +53,11 @@ export class NotificationTypeormRepository
 
   async getNotifications(): Promise<NotificationPrimitive[]> {
     try {
-      const notifications = await this.find();
+      const notifications = await this.find({
+        order: {
+          creationDate: 'DESC',
+        },
+      });
 
       return notifications;
     } catch (error) {

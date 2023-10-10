@@ -6,4 +6,5 @@ export interface NotificationEventRepository {
     NotificationEvent: NotificationCreatedEvent,
     transaction?: Transaction,
   ): Promise<void>;
+  getNotificationEvents(): Promise<NotificationCreatedEvent[]>;
 }

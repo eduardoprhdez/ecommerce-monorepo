@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('NotificationEventTypeormEntity')
 export class NotificationEventTypeormEntity {
@@ -13,4 +18,7 @@ export class NotificationEventTypeormEntity {
 
   @Column({ type: 'json' })
   eventData: Record<string, unknown>;
+
+  @CreateDateColumn()
+  creationDate: string;
 }

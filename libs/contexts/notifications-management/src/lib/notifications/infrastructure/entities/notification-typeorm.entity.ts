@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn } from 'typeorm';
 import { NotificationPrimitive } from '../../domain';
 
 @Entity('NotificationTypeormEntity')
@@ -8,4 +8,7 @@ export class NotificationTypeormEntity implements NotificationPrimitive {
 
   @Column({ type: 'text' })
   message: string;
+
+  @CreateDateColumn()
+  creationDate: string;
 }

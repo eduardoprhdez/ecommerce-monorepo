@@ -10,6 +10,21 @@ export class NotificationEventTypeormRepository
   extends Repository<NotificationEventTypeormEntity>
   implements NotificationEventRepository
 {
+  async getNotificationEvents(): Promise<NotificationCreatedEvent[]> {
+    try {
+      return this.find({
+        order: {
+          creationDate: 'DESC',
+        },
+      }) as any;
+    } catch (error) {
+      throw new DatabaseError(
+        this.constructor.name,
+        'getNotificationEvents',
+        '',
+      );
+    }
+  }
   async saveNotificationEvent(
     NotificationEvent: NotificationCreatedEvent,
     transaction: TransactionTypeorm,
