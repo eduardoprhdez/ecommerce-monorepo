@@ -1,28 +1,53 @@
+import {
+  BaseError,
+  DatabaseRecordNotFoundError,
+  TransactionManager,
+  UnexpectedError,
+} from '@ecommerce-monorepo/shared';
 import { OrderAggregate, OrderRepository } from '../../domain';
-import { SaveOrderDTO } from '../../domain/dtos/save-order.dto';
 import { ApproveOrderCommand } from '../commands/approve-order.command';
+import { OrderApprovedEvent } from '../../domain/events/order-approved.event';
+import { OrderEventRepository } from '../../domain/repositories/order-event.repository';
 
 export class ApproveOrderCommandHandler {
-  constructor(private orderRepository: OrderRepository) {}
+  constructor(
+    private orderRepository: OrderRepository,
+    private orderEventRepository: OrderEventRepository,
+    private transactionManager: TransactionManager,
+  ) {}
 
   async execute(approveOrderCommand: ApproveOrderCommand): Promise<void> {
-    let aggregate: OrderAggregate;
     try {
-      aggregate = OrderAggregate.fromPrimitives(
-        await this.orderRepository.getOrder(approveOrderCommand.id),
+      const orderPrimitive = await this.orderRepository.getOrder(
+        approveOrderCommand.id,
       );
-    } catch (err) {
-      //TODO: Error más semántico
-      throw new Error();
-    }
 
-    const orderPersistencyDTO: SaveOrderDTO = aggregate.approveOrder();
+      if (!orderPrimitive)
+        throw new DatabaseRecordNotFoundError(this.constructor.name, 'execute');
 
-    try {
-      return await this.orderRepository.saveOrder(orderPersistencyDTO);
+      const aggregate = OrderAggregate.fromPrimitives(orderPrimitive);
+
+      const orderApprovedEvent: OrderApprovedEvent = aggregate.approveOrder();
+
+      const transaction = this.transactionManager.createTransaction();
+      await transaction.start();
+
+      try {
+        await this.orderRepository.saveOrder(aggregate.toPrimitives());
+        await this.orderEventRepository.saveOrderEvent(orderApprovedEvent);
+        await transaction.commit();
+      } catch (error) {
+        await transaction.rollback();
+      } finally {
+        await transaction.finish();
+      }
     } catch (err) {
-      //TODO: Error más semántico
-      throw new Error();
+      if (err instanceof BaseError) throw err;
+      throw new UnexpectedError(
+        this.constructor.name,
+        'execute',
+        JSON.stringify(approveOrderCommand),
+      );
     }
   }
 }

@@ -1,3 +1,4 @@
+import { BaseError, UnexpectedError } from '@ecommerce-monorepo/shared';
 import { OrderAggregate, OrderPrimitive, OrderRepository } from '../../domain';
 
 export class GetManyOrdersQueryHandler {
@@ -13,8 +14,8 @@ export class GetManyOrdersQueryHandler {
 
       return orders.map((order) => order.toPrimitives());
     } catch (err) {
-      //TODO: meaningful error
-      throw new Error();
+      if (err instanceof BaseError) throw err;
+      throw new UnexpectedError(this.constructor.name, 'execute', '');
     }
   }
 }

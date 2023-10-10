@@ -4,9 +4,10 @@ import { OrderPrimitive } from './primitives/order.primitive';
 import { OrderIdValueObject } from './value-objects/order-id.value-object';
 import { OrderStateValueObject } from './value-objects/order-state.value-object';
 import { OrderStatePrimitive } from './primitives/order-state.primitive';
-import { SaveOrderDTO } from './dtos/save-order.dto';
 import { v4 as uuid } from 'uuid';
 import { OrderRejectionReasonValueObject } from './value-objects/order-rejection-reason.value-object';
+import { OrderCancelledEvent } from './events/order-cancelled.event';
+import { OrderApprovedEvent } from './events/order-approved.event';
 
 export class OrderAggregate extends AggregateRoot {
   id: OrderIdValueObject;
@@ -27,33 +28,27 @@ export class OrderAggregate extends AggregateRoot {
     this.rejectionReason = rejectionReason;
   }
 
-  approveOrder(): SaveOrderDTO {
+  approveOrder(): OrderApprovedEvent {
     this.state = new OrderStateValueObject(OrderStatePrimitive.APPROVED);
 
-    return this.toPersistencyDTO(true, false, false);
+    return new OrderApprovedEvent(this.id.value, {
+      id: this.id.value,
+      state: this.state.value as OrderStatePrimitive,
+    });
   }
 
-  cancelOrder(rejectionReason?: string): SaveOrderDTO {
+  cancelOrder(rejectionReason?: string): OrderCancelledEvent {
     this.state = new OrderStateValueObject(OrderStatePrimitive.CANCELLED);
     if (rejectionReason)
       this.rejectionReason = new OrderRejectionReasonValueObject(
         rejectionReason,
       );
 
-    return this.toPersistencyDTO(true, false, rejectionReason ? true : false);
-  }
-
-  private toPersistencyDTO(
-    state: boolean,
-    items: boolean,
-    rejectionReason: boolean,
-  ): SaveOrderDTO {
-    return {
+    return new OrderCancelledEvent(this.id.value, {
       id: this.id.value,
-      ...(state && { state: this.state.value as OrderStatePrimitive }),
-      ...(items && { items: this.items.map((item) => item.toPrimitives()) }),
-      ...(rejectionReason && { rejectionReason: this.rejectionReason?.value }),
-    };
+      state: this.state.value as OrderStatePrimitive,
+      ...(rejectionReason && { rejectionReason }),
+    });
   }
 
   toPrimitives(): OrderPrimitive {
@@ -61,6 +56,7 @@ export class OrderAggregate extends AggregateRoot {
       id: this.id.value,
       items: this.items.map((item) => item.toPrimitives()),
       state: this.state.value as OrderStatePrimitive,
+      rejectionReason: this.rejectionReason?.value,
     };
   }
 

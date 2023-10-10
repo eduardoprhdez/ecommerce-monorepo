@@ -1,31 +1,56 @@
+import {
+  BaseError,
+  DatabaseRecordNotFoundError,
+  TransactionManager,
+  UnexpectedError,
+} from '@ecommerce-monorepo/shared';
 import { OrderAggregate, OrderRepository } from '../../domain';
-import { SaveOrderDTO } from '../../domain/dtos/save-order.dto';
 import { CancelOrderCommand } from '../commands/cancel-order.command';
+import { OrderCancelledEvent } from '../../domain/events/order-cancelled.event';
+import { OrderEventRepository } from '../../domain/repositories/order-event.repository';
 
 export class CancelOrderCommandHandler {
-  constructor(private orderRepository: OrderRepository) {}
+  constructor(
+    private orderRepository: OrderRepository,
+    private orderEventRepository: OrderEventRepository,
+    private transactionManager: TransactionManager,
+  ) {}
 
   async execute(cancelOrderCommand: CancelOrderCommand): Promise<void> {
-    let orderAggregate: OrderAggregate;
-
+    console.log('COMANDO', cancelOrderCommand);
     try {
-      orderAggregate = OrderAggregate.fromPrimitives(
-        await this.orderRepository.getOrder(cancelOrderCommand.id),
+      const orderPrimitive = await this.orderRepository.getOrder(
+        cancelOrderCommand.id,
       );
-    } catch (err) {
-      //TODO: Error más semántico
-      throw new Error();
-    }
 
-    const orderPersistencyDTO: SaveOrderDTO = orderAggregate.cancelOrder(
-      cancelOrderCommand.rejectionReason,
-    );
+      if (!orderPrimitive)
+        throw new DatabaseRecordNotFoundError(this.constructor.name, 'execute');
 
-    try {
-      return await this.orderRepository.saveOrder(orderPersistencyDTO);
+      const aggregate = OrderAggregate.fromPrimitives(orderPrimitive);
+
+      const orderCanceldEvent: OrderCancelledEvent = aggregate.cancelOrder(
+        cancelOrderCommand.rejectionReason,
+      );
+
+      const transaction = this.transactionManager.createTransaction();
+      await transaction.start();
+
+      try {
+        await this.orderRepository.saveOrder(aggregate.toPrimitives());
+        await this.orderEventRepository.saveOrderEvent(orderCanceldEvent);
+        await transaction.commit();
+      } catch (error) {
+        await transaction.rollback();
+      } finally {
+        await transaction.finish();
+      }
     } catch (err) {
-      //TODO: Error más semántico
-      throw new Error();
+      if (err instanceof BaseError) throw err;
+      throw new UnexpectedError(
+        this.constructor.name,
+        'execute',
+        JSON.stringify(cancelOrderCommand),
+      );
     }
   }
 }

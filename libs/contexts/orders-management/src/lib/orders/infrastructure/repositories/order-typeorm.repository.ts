@@ -2,15 +2,20 @@ import { Repository } from 'typeorm';
 import { OrderRepository, OrderPrimitive } from '../../domain';
 import { OrderTypeormEntity } from '../entities/order-typeorm.entity';
 import { SaveOrderDTO } from '../../domain/dtos/save-order.dto';
-import { DatabaseError } from '@ecommerce-monorepo/shared';
+import { DatabaseError, TransactionTypeorm } from '@ecommerce-monorepo/shared';
 
 export class OrderTypeormRepository
   extends Repository<OrderTypeormEntity>
   implements OrderRepository
 {
-  async saveOrder(order: SaveOrderDTO): Promise<void> {
+  async saveOrder(
+    order: SaveOrderDTO,
+    transaction: TransactionTypeorm,
+  ): Promise<void> {
     try {
-      await this.save(order);
+      transaction
+        ? await transaction.queryRunner.manager.save(OrderTypeormEntity, order)
+        : await this.save(order);
     } catch (error) {
       console.log(error);
       throw new DatabaseError(
