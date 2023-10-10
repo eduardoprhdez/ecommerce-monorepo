@@ -9,3 +9,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ecommerce
+    networks:
+      - ecommerce-test
+networks:
+  ecommerce-test:
+    driver: bridge
