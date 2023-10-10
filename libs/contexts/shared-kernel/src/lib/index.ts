@@ -18,6 +18,8 @@ export * from './domain/errors/value-not-defined.error';
 
 export * from './domain/errors/invalid-argument.error';
 
+export * from './domain/events/domain-event';
+
 export * from './aggregate-root';
 
 export * from './entity';
