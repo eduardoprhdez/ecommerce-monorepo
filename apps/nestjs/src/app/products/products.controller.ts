@@ -11,11 +11,16 @@ import {
 } from '@nestjs/common';
 import { ClientKafka, EventPattern, Payload } from '@nestjs/microservices';
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import {
   CreateProductCommandHandler,
   UpdateProductCommandHandler,
   DeleteProductCommandHandler,
-  CreateProductCommand,
-  UpdateProductCommand,
   ReduceProductsStockCommandHandler,
   ReduceProductsStockCommand,
   GetProductQueryHandler,
@@ -31,8 +36,12 @@ import {
 } from '@ecommerce-monorepo/saga';
 import { PRODUCT_EVENT_EMITTER } from '../orders/constants/contants';
 import { HttpExceptionFilter } from '../errors/http-exception-filter';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductResponseDto } from './dto/product-response.dto';
 
-@Controller('products')
+@ApiTags('products')
+@Controller({ path: 'products', version: '1' })
 @UseFilters(new HttpExceptionFilter())
 export class ProductController {
   constructor(
@@ -53,26 +62,47 @@ export class ProductController {
   ) {}
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a product by ID' })
+  @ApiParam({ name: 'id', description: 'Product ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Product found successfully',
+    type: ProductResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   getProduct(@Param('id') productId: string): Promise<ProductPrimitive> {
     return this.getProductQueryHandler.execute({ id: productId });
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all products' })
+  @ApiResponse({
+    status: 200,
+    description: 'Products retrieved successfully',
+    type: [ProductResponseDto],
+  })
   getProducts(): Promise<ProductPrimitive[]> {
     return this.getManyProductsQueryHandler.execute();
   }
 
   @Post()
-  createProduct(
-    @Body() createProductRequest: CreateProductCommand,
-  ): Promise<void> {
+  @ApiOperation({ summary: 'Create a new product' })
+  @ApiBody({ type: CreateProductDto })
+  @ApiResponse({ status: 201, description: 'Product created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  createProduct(@Body() createProductRequest: CreateProductDto): Promise<void> {
     return this.createProductCommandHandler.execute(createProductRequest);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a product' })
+  @ApiParam({ name: 'id', description: 'Product ID', type: 'string' })
+  @ApiBody({ type: UpdateProductDto })
+  @ApiResponse({ status: 200, description: 'Product updated successfully' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   updateProduct(
     @Param('id') productId: string,
-    @Body() updateProductRequest: Omit<UpdateProductCommand, 'id'>,
+    @Body() updateProductRequest: UpdateProductDto,
   ): Promise<void> {
     return this.updateProductCommandHandler.execute({
       ...updateProductRequest,
@@ -81,6 +111,10 @@ export class ProductController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a product' })
+  @ApiParam({ name: 'id', description: 'Product ID', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Product deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   deleteProduct(@Param('id') productId: string): Promise<void> {
     return this.deleteProductCommandHandler.execute({ id: productId });
   }

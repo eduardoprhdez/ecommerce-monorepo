@@ -5,7 +5,10 @@
     "module": "commonjs",
     "types": ["node"],
     "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "target": "es2021",
+    "sourceMap": true,
+    "inlineSourceMap": false,
+    "inlineSources": false
   },
   "exclude": [
     "jest.config.ts",

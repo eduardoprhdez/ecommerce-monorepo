@@ -5,19 +5,22 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "target": "node",
-        "compiler": "tsc",
         "outputPath": "dist/apps/nestjs",
         "main": "apps/nestjs/src/main.ts",
-        "tsConfig": "apps/nestjs/tsconfig.app.json"
+        "tsConfig": "apps/nestjs/tsconfig.app.json",
+        "generatePackageJson": true
       },
       "configurations": {
-        "development": {},
-        "production": {}
+        "development": {
+          "sourceMap": true
+        },
+        "production": {
+          "sourceMap": false
+        }
       }
     },
     "serve": {
@@ -32,6 +35,10 @@
         },
         "production": {
           "buildTarget": "nestjs:build:production"
+        },
+        "debug": {
+          "buildTarget": "nestjs:build:development",
+          "inspect": true
         }
       }
     },

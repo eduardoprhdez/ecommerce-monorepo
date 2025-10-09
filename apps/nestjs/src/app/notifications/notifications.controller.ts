@@ -9,8 +9,14 @@ import {
 } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import {
   CreateNotificationCommandHandler,
-  CreateNotificationCommand,
   GetNotificationQueryHandler,
   NotificationPrimitive,
   GetManyNotificationsQueryHandler,
@@ -25,8 +31,11 @@ import {
 } from '@ecommerce-monorepo/orders-management';
 import { pubSub } from './notifications.resolver';
 import { HttpExceptionFilter } from '../errors/http-exception-filter';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { NotificationResponseDto } from './dto/notification-response.dto';
 
-@Controller('notifications')
+@ApiTags('notifications')
+@Controller({ path: 'notifications', version: '1' })
 @UseFilters(new HttpExceptionFilter())
 export class NotificationController {
   constructor(
@@ -39,8 +48,15 @@ export class NotificationController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new notification' })
+  @ApiBody({ type: CreateNotificationDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Notification created successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Invalid notification data' })
   createNotification(
-    @Body() createNotificationRequest: CreateNotificationCommand,
+    @Body() createNotificationRequest: CreateNotificationDto,
   ): Promise<void> {
     return this.createNotificationCommandHandler.execute(
       createNotificationRequest,
@@ -48,6 +64,14 @@ export class NotificationController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a notification by ID' })
+  @ApiParam({ name: 'id', description: 'Notification ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Notification found successfully',
+    type: NotificationResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Notification not found' })
   getNotification(
     @Param('id') notificationId: string,
   ): Promise<NotificationPrimitive> {
@@ -57,6 +81,12 @@ export class NotificationController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all notifications' })
+  @ApiResponse({
+    status: 200,
+    description: 'Notifications retrieved successfully',
+    type: [NotificationResponseDto],
+  })
   getNotifications(): Promise<NotificationPrimitive[]> {
     return this.getManyNotificationsQueryHandler.execute();
   }

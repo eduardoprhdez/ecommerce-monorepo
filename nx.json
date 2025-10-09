@@ -4,7 +4,7 @@
     "default": {
       "runner": "nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "cacheableOperations": ["build", "lint", "test", "e2e", "server"],
         "accessToken": "YWViYjk4MzEtZWUzOS00ODQ2LThmYmItNjgyM2UyNjVjMDMwfHJlYWQtd3JpdGU="
       }
     }
@@ -24,6 +24,9 @@
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+    },
+    "server": {
+      "cache": true
     }
   },
   "namedInputs": {
@@ -39,5 +42,15 @@
       "!{projectRoot}/test-setup.[jt]s"
     ],
     "sharedGlobals": []
+  },
+  "generators": {
+    "@nx/nest:application": {
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nx/nest:library": {
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    }
   }
 }

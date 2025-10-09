@@ -68,7 +68,10 @@ export class OrderAggregate extends AggregateRoot {
       return OrderItemEntity.fromPrimitives(item);
     });
     const state = new OrderStateValueObject(order.state);
+    const rejectionReason = order.rejectionReason
+      ? new OrderRejectionReasonValueObject(order.rejectionReason)
+      : undefined;
 
-    return new OrderAggregate(id, items, state);
+    return new OrderAggregate(id, items, state, rejectionReason);
   }
 }
